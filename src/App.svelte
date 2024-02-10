@@ -18,6 +18,9 @@
     }
   });
 
+  let timer;
+  let wmp = $state(0);
+
   const sentence = [
     "the",
     "quick",
@@ -36,7 +39,6 @@
   let value = $state("");
 
   function updateUrlWithLayout() {
-    console.log("called update url");
     const layoutString = layout.replaceAll(" ", "");
     const encodedLayout = encodeURIComponent(layoutString);
     const newUrl = `/?layout=${encodedLayout}`;
@@ -45,12 +47,30 @@
   }
 
   function handleKeyDown(event) {
+    if (wmp) {
+      event.preventDefault();
+      wmp = 0;
+      value = "";
+      return;
+    }
+
+    if (!timer) {
+      timer = new Date().getTime();
+      wmp = 0;
+    }
+
     if (event.key === " ") {
       if (words[0] === value) {
+        event.preventDefault();
         value = "";
         words.shift();
 
         if (words.length === 0) {
+          const timeDifference = new Date().getTime() - timer;
+          const timeInMinutes = timeDifference / 60000; // 60,000 milliseconds in a minute
+          const wordsPerMinute = sentence.length / timeInMinutes;
+          wmp = Math.round(wordsPerMinute / 10) * 10;
+          timer = null;
           words = [...sentence];
         }
       }
@@ -92,13 +112,27 @@
 <h1 class="title">Emulayout</h1>
 
 <div class="what-to-type">
-  {#each words as word}
-    <span class="word">{word}</span>
-  {/each}
+  {#if wmp}
+    <span class="word">Words per minute: {wmp}</span>
+  {:else}
+    {#each words as word}
+      <span class="word">{word}</span>
+    {/each}
+  {/if}
 </div>
 
 <div class="type-container">
-  <input autofocus {value} class="input-field" onkeydown={handleKeyDown} />
+  <input
+    placeholder={timer
+      ? ""
+      : wmp
+        ? "Press any key to restart"
+        : "Type to begin"}
+    autofocus
+    {value}
+    class="input-field"
+    onkeydown={handleKeyDown}
+  />
 </div>
 
 <Keyboard {keyMap} />
@@ -163,5 +197,6 @@
 
   .input-field {
     font-size: 2rem;
+    width: 350px;
   }
 </style>
