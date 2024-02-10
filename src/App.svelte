@@ -1,11 +1,8 @@
 <script>
   import { onMount } from "svelte";
   import { formatLayoutParam } from "./lib/formatLayoutParam.js";
-  import {
-    createKeyMap,
-    ansiAmericanLayout,
-    qwertyKeyMap,
-  } from "./lib/createKeyMap.js";
+  import { createKeyMap } from "./lib/createKeyMap.js";
+  import Keyboard from "./lib/Keyboard.svelte";
 
   let layout = $state("");
 
@@ -21,7 +18,7 @@
     }
   });
 
-  let words = [
+  const sentence = [
     "the",
     "quick",
     "brown",
@@ -33,6 +30,7 @@
     "dog",
   ];
 
+  let words = $state([...sentence]);
   let keyMap = $derived(createKeyMap(layout));
 
   let value = $state("");
@@ -47,6 +45,19 @@
   }
 
   function handleKeyDown(event) {
+    if (event.key === " ") {
+      if (words[0] === value) {
+        value = "";
+        words.shift();
+
+        if (words.length === 0) {
+          words = [...sentence];
+        }
+      }
+
+      return;
+    }
+
     if (event.metaKey) return;
     if (event.ctrlKey) return;
     if (event.altKey) return;
@@ -90,34 +101,7 @@
   <input autofocus {value} class="input-field" onkeydown={handleKeyDown} />
 </div>
 
-<div class="keyboard">
-  {#each ansiAmericanLayout as keyRow, rowIndex}
-    <div class="key-row">
-      {#each keyRow as keyCode, columnIndex}
-        {#if rowIndex === 0 && columnIndex === 12}
-          <div class="long-key">
-            {keyMap[keyCode] || qwertyKeyMap[keyCode]}
-          </div>
-        {:else}
-          <div
-            class="key"
-            class:home={rowIndex == 1 &&
-              ((columnIndex >= 0 && columnIndex <= 3) ||
-                (columnIndex >= 6 && columnIndex <= 9))}
-          >
-            {keyMap[keyCode] || qwertyKeyMap[keyCode]}
-          </div>
-          {#if rowIndex === 1 && columnIndex === 10}
-            <div class="long-key">Enter</div>
-          {/if}
-          {#if rowIndex === 2 && columnIndex === 9}
-            <div class="long-key">shift</div>
-          {/if}
-        {/if}
-      {/each}
-    </div>
-  {/each}
-</div>
+<Keyboard {keyMap} />
 
 <div class="layout-area">
   <div class="layout-content">
@@ -152,39 +136,6 @@
 
   .home {
     filter: sepia(1);
-  }
-
-  .keyboard {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .key-row {
-    display: flex;
-  }
-
-  .key {
-    background-image: url("/key.png");
-    color: black;
-    background-size: cover;
-    font-family: monospace;
-    text-transform: uppercase;
-    font-size: 1.2rem;
-    text-align: center;
-    width: 30px;
-    padding: 8px;
-  }
-
-  .long-key {
-    background-image: url("/long-key.png");
-    background-size: cover;
-    font-family: monospace;
-    text-transform: uppercase;
-    font-size: 1.2rem;
-    text-align: center;
-    width: 90px;
-    padding: 8px;
   }
 
   .title {
