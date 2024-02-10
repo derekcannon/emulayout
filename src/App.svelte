@@ -78,7 +78,7 @@
   }
 </script>
 
-<h1 class="title">Switchboard</h1>
+<h1 class="title">Emulayout</h1>
 
 <div class="what-to-type">
   {#each words as word}
@@ -179,19 +179,21 @@
   .long-key {
     background-image: url("/long-key.png");
     background-size: cover;
-
     font-family: monospace;
     text-transform: uppercase;
     font-size: 1.2rem;
     text-align: center;
-    width: 73px;
+    width: 90px;
     padding: 8px;
-    border: 1px solid #000;
   }
 
   .title {
     text-align: center;
     margin: 0;
+    background: -webkit-linear-gradient(#8800b6, #ff4646);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 
   .word {
