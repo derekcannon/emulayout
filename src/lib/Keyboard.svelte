@@ -44,6 +44,10 @@
     display: flex;
   }
 
+  .home {
+    filter: sepia(1);
+  }
+
   .key {
     background-image: url("/key.png");
     color: black;

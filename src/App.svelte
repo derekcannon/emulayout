@@ -134,10 +134,6 @@
     max-width: 400px;
   }
 
-  .home {
-    filter: sepia(1);
-  }
-
   .title {
     text-align: center;
     margin: 0;
